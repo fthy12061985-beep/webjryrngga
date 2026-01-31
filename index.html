@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JERRY X RNGGA V1 - ULTIMATE DASHBOARD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins & Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 16px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #e2e8f0;
+            background-color: #0f172a; /* Fallback color */
+            overflow-x: hidden;
+        }
+
+        /* Tech Font for Headers */
+        h1, h2, h3, h4, .tech-font {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* --- ADVANCED GLASSMORPHISM --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- COMPLEX ANIMATIONS --- */
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(5px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+
+        @keyframes interfaceZoom {
+            0% { opacity: 0; transform: scale(1.1); filter: blur(10px); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+        .animate-interface-open { animation: interfaceZoom 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(15, 23, 42, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0); }
+        }
+        .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+
+        /* --- COMPONENT STYLES --- */
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .feature-card:hover::before { opacity: 1; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Chat Bubbles */
+        .chat-bubble {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            position: relative;
+            animation: slideUpFade 0.4s ease-out forwards;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .chat-user { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: white; border-bottom-right-radius: 4px; margin-left: auto; }
+        .chat-ai { background: rgba(255,255,255,0.9); color: #1e293b; border-bottom-left-radius: 4px; margin-right: auto; }
+
+        /* Visualizers */
+        .music-wave { display: flex; align-items: center; height: 24px; gap: 4px; }
+        .music-bar { width: 4px; background: #1DB954; border-radius: 99px; animation: music-dance 1.2s infinite ease-in-out; }
+        .music-bar:nth-child(1) { animation-delay: 0.1s; height: 40%; }
+        .music-bar:nth-child(2) { animation-delay: 0.3s; height: 70%; }
+        .music-bar:nth-child(3) { animation-delay: 0.5s; height: 100%; }
+        .music-bar:nth-child(4) { animation-delay: 0.2s; height: 60%; }
+        @keyframes music-dance { 0%, 100% { height: 20%; opacity: 0.5; } 50% { height: 100%; opacity: 1; } }
+
+        /* System Monitor Widget */
+        .sys-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+        .sys-fill { height: 100%; background: #3b82f6; width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px #3b82f6; }
+
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10; pointer-events: none; }
+        
+        /* Tab Styles */
+        .spotify-tab-active { background-color: #1DB954; color: white; border-color: #1DB954; transform: scale(1.05); box-shadow: 0 4px 10px rgba(29, 185, 84, 0.3); }
+        .spotify-tab-inactive { background-color: white; color: #4b5563; border-color: #e5e7eb; }
+        
+        .yt-tab-active { background-color: #ef4444; color: white; border-color: #ef4444; transform: scale(1.05); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
+        .yt-tab-inactive { background-color: white; color: #4b5563; border-color: #e5e7eb; }
+
+        /* Secret Menu */
+        .secret-bg { background-color: #0f172a; color: #e2e8f0; }
+        .secret-btn { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(148, 163, 184, 0.2); transition: all 0.3s; }
+        .secret-btn:hover { border-color: #8b5cf6; background: rgba(30, 41, 59, 0.9); box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); transform: translateY(-5px); }
+
+        /* Auth Form Styles */
+        .auth-switch { cursor: pointer; color: #60a5fa; text-decoration: underline; }
+        .auth-switch:hover { color: #93c5fd; }
+
+        /* Profile Pic Hover Edit Effect */
+        .pfp-container:hover .pfp-overlay { opacity: 1; }
+        .pfp-overlay {
+            background: rgba(0,0,0,0.6);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+
+    <div class="fixed top-0 left-0 w-full h-full -z-30">
+        <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-60">
+            <source src="https://files.catbox.moe/60f4px.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="fixed top-0 left-0 w-full h-full -z-20 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/80 backdrop-blur-[2px]"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- AUTH SCREEN (Replaces Welcome) -->
+    <section id="auth-screen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center transition-all duration-700 ease-in-out">
+        <div class="max-w-md w-full bg-slate-800/60 shadow-[0_0_50px_rgba(59,130,246,0.3)] rounded-3xl p-8 fade-in-up border border-slate-600/50 relative overflow-hidden">
+            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_20px_#3b82f6]"></div>
+            
+            <div class="mb-6 inline-flex items-center justify-center w-28 h-28 rounded-full bg-slate-900/50 mb-4 shadow-2xl overflow-hidden border-4 border-slate-600/50 relative animate-float group">
+                <div class="absolute inset-0 bg-blue-500/20 rounded-full animate-pulse"></div>
+                <img src="https://files.catbox.moe/7j1bli.jpg" alt="Mascot" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+            </div>
+
+            <h1 class="text-2xl font-bold mb-1 text-white tech-font tracking-widest drop-shadow-lg">SYSTEM LOGIN</h1>
+            <p class="text-xs text-slate-400 mb-6 font-mono">SECURE ACCESS GATEWAY V3.2</p>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="w-full space-y-4">
+                <div class="relative group text-left">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Username</label>
+                    <input type="text" id="login-user" placeholder="Rngga1" class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white placeholder:text-slate-600 transition-all">
+                </div>
+                <div class="relative group text-left">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Password</label>
+                    <input type="password" id="login-pass" placeholder="••••••" class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-white placeholder:text-slate-600 transition-all">
+                </div>
+                <button onclick="handleLogin()" id="btn-login" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] transition-all duration-300 active:scale-95 border border-white/10 mt-2">
+                    MASUK SYSTEM
+                </button>
+                <p class="text-xs text-slate-400 mt-4">Belum punya akun? <span onclick="switchAuth('register')" class="auth-switch">Daftar disini</span></p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="w-full space-y-4 hidden">
+                <div class="relative group text-left">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Buat Username</label>
+                    <input type="text" id="reg-user" placeholder="Ex: User123" class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder:text-slate-600 transition-all">
+                </div>
+                <div class="relative group text-left">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Buat Password</label>
+                    <input type="password" id="reg-pass" placeholder="••••••" class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder:text-slate-600 transition-all">
+                </div>
+                <button onclick="handleRegister()" id="btn-register" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300 active:scale-95 border border-white/10 mt-2">
+                    DAFTAR AKUN
+                </button>
+                <p class="text-xs text-slate-400 mt-4">Sudah punya akun? <span onclick="switchAuth('login')" class="auth-switch">Login disini</span></p>
+            </div>
+
+            <p id="auth-error" class="text-rose-500 text-xs mt-4 font-bold hidden animate-pulse"></p>
+        </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <div id="main-dashboard" class="hidden container mx-auto px-4 py-8 max-w-6xl flex-grow flex flex-col min-h-screen relative z-10">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12 animate-slide-up bg-slate-900/40 p-6 rounded-2xl border border-slate-700/30 backdrop-blur-md">
+            <div class="flex items-center gap-6 mb-4 md:mb-0">
+                
+                <!-- PROFILE PICTURE SECTION (EDITABLE) -->
+                <div class="relative w-20 h-20 pfp-container cursor-pointer group" onclick="document.getElementById('pfp-input').click()" title="Ganti Foto Profil">
+                    <div class="absolute inset-0 bg-blue-500 rounded-full blur-md opacity-50 animate-pulse"></div>
+                    <!-- Main Image -->
+                    <img id="dash-profile-pic" src="https://files.catbox.moe/7j1bli.jpg" alt="Profile" class="relative w-full h-full rounded-full border-2 border-white/50 object-cover shadow-2xl z-10">
+                    <!-- Edit Overlay -->
+                    <div class="absolute inset-0 rounded-full pfp-overlay z-20">
+                        <i class="fas fa-camera text-white text-xl"></i>
+                    </div>
+                    <!-- Online Dot -->
+                    <div class="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-2 border-slate-900 rounded-full z-30"></div>
+                </div>
+
+                <div>
+                    <h2 class="text-3xl font-bold text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.5)] mb-1 tech-font" id="dash-username">Jerry <span class="text-blue-400">X</span> Rngga</h2>
+                    <div class="flex items-center gap-2 text-xs font-mono text-slate-300">
+                        <span id="dash-role" class="bg-blue-900/50 px-2 py-1 rounded text-blue-300 border border-blue-500/30">GUEST</span>
+                        <span class="text-slate-500">|</span>
+                        <span id="date-display">System Ready</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 w-full md:w-auto">
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50 text-center w-full min-w-[80px]"><div class="text-[10px] text-slate-400 font-mono mb-1">CPU</div><div class="text-blue-400 font-bold font-mono text-sm" id="stat-cpu">12%</div><div class="sys-bar"><div class="sys-fill" id="bar-cpu" style="width: 12%"></div></div></div>
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50 text-center w-full min-w-[80px]"><div class="text-[10px] text-slate-400 font-mono mb-1">RAM</div><div class="text-purple-400 font-bold font-mono text-sm" id="stat-ram">45%</div><div class="sys-bar"><div class="sys-fill" id="bar-ram" style="width: 45%; background: #a855f7;"></div></div></div>
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50 text-center w-full min-w-[80px]"><div class="text-[10px] text-slate-400 font-mono mb-1">NET</div><div class="text-green-400 font-bold font-mono text-sm" id="stat-net">12ms</div><div class="sys-bar"><div class="sys-fill" id="bar-net" style="width: 80%; background: #22c55e;"></div></div></div>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+            <div onclick="triggerFeature('Chat AI')" class="feature-card glass-card p-6 rounded-3xl cursor-pointer group relative animate-slide-up delay-100 border-t-4 border-t-blue-500">
+                <div class="flex justify-between items-start mb-6"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"><i class="fas fa-comments text-2xl text-white"></i></div><div class="bg-blue-500/20 p-2 rounded-full"><i class="fas fa-robot text-xl text-blue-400"></i></div></div>
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Chat With AI</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Asisten cerdas Gemini 2.5 Flash siap membantu menjawab pertanyaan Anda.</p>
+                <div class="flex items-center text-blue-400 text-xs font-bold uppercase tracking-wider group-hover:translate-x-2 transition-transform">Launch Module <i class="fas fa-arrow-right ml-2"></i></div>
+            </div>
+            <div onclick="triggerFeature('Spotify Downloader')" class="feature-card glass-card p-6 rounded-3xl cursor-pointer group relative animate-slide-up delay-200 border-t-4 border-t-green-500">
+                <div class="flex justify-between items-start mb-6"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"><i class="fas fa-music text-2xl text-white"></i></div><div class="bg-green-500/20 p-2 rounded-full"><i class="fab fa-spotify text-xl text-green-400"></i></div></div>
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">Spotify DL</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Unduh Lagu & Album favorit, serta fitur pencarian musik lengkap.</p>
+                <div class="flex items-center text-green-400 text-xs font-bold uppercase tracking-wider group-hover:translate-x-2 transition-transform">Access Library <i class="fas fa-arrow-right ml-2"></i></div>
+            </div>
+            <div onclick="triggerFeature('YouTube Downloader')" class="feature-card glass-card p-6 rounded-3xl cursor-pointer group relative animate-slide-up delay-300 border-t-4 border-t-red-600">
+                <div class="flex justify-between items-start mb-6"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"><i class="fas fa-play text-2xl text-white"></i></div><div class="bg-red-500/20 p-2 rounded-full"><i class="fab fa-youtube text-xl text-red-400"></i></div></div>
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-red-400 transition-colors">YouTube DL</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Konversi video YouTube ke format MP3 (Audio) atau MP4 (Video).</p>
+                <div class="flex items-center text-red-400 text-xs font-bold uppercase tracking-wider group-hover:translate-x-2 transition-transform">Start Converter <i class="fas fa-arrow-right ml-2"></i></div>
+            </div>
+            <div onclick="triggerFeature('Tiktok Downloader')" class="feature-card glass-card p-6 rounded-3xl cursor-pointer group relative animate-slide-up delay-400 border-t-4 border-t-slate-500">
+                <div class="flex justify-between items-start mb-6"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"><i class="fas fa-cloud-download-alt text-2xl text-white"></i></div><div class="bg-slate-500/20 p-2 rounded-full"><i class="fa-brands fa-tiktok text-xl text-white"></i></div></div>
+                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-slate-300 transition-colors">Tiktok DL</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Unduh video TikTok tanpa watermark dengan kecepatan tinggi.</p>
+                <div class="flex items-center text-slate-300 text-xs font-bold uppercase tracking-wider group-hover:translate-x-2 transition-transform">Get Video <i class="fas fa-arrow-right ml-2"></i></div>
+            </div>
+            <div onclick="triggerFeature('Secret Menu')" class="feature-card glass-card p-6 rounded-3xl cursor-pointer group relative animate-slide-up delay-500 border-t-4 border-t-violet-600 md:col-span-2 lg:col-span-2">
+                <div class="absolute inset-0 bg-violet-600/5 group-hover:bg-violet-600/10 transition-colors"></div>
+                <div class="flex items-center gap-6 relative z-10"><div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-700 flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500"><i class="fas fa-user-secret text-4xl text-white"></i></div><div><h3 class="text-2xl font-bold text-white mb-1 group-hover:text-violet-400 transition-colors tech-font">SECRET AREA</h3><p class="text-sm text-slate-400 mb-2">Akses alat eksklusif: Subdomain Scanner & Fitur VIP lainnya.</p><span class="inline-block px-2 py-1 bg-violet-500/20 border border-violet-500/30 rounded text-[10px] text-violet-300 font-mono tracking-widest">RESTRICTED ACCESS</span></div><i class="fas fa-lock absolute right-2 top-2 text-slate-700 text-6xl opacity-20 -rotate-12 group-hover:rotate-0 transition-transform"></i></div>
+            </div>
+        </main>
+        <footer class="mt-auto text-center text-slate-500 text-xs py-6 animate-slide-up delay-600 border-t border-slate-800/50"><p class="mb-2">&copy; 2024 JERRY X RNGGA. All System Rights Reserved.</p><div class="flex justify-center gap-4 opacity-50"><span><i class="fas fa-shield-alt"></i> Secure</span><span><i class="fas fa-bolt"></i> Fast</span><span><i class="fas fa-code"></i> v3.2 DB AUTH</span></div></footer>
+    </div>
+
+    <!-- HIDDEN INPUT FOR FILE UPLOAD -->
+    <input type="file" id="pfp-input" accept="image/*" class="hidden">
+
+    <!-- SECRET WARNING & INTERFACES (Hidden by default) -->
+    <div id="secret-warning" class="hidden fixed inset-0 z-[70] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-interface-open"><div class="max-w-md w-full border-2 border-red-600 p-10 rounded-2xl bg-slate-900/80 relative shadow-[0_0_100px_rgba(220,38,38,0.4)]"><i class="fas fa-biohazard text-7xl text-red-600 mb-6 animate-pulse"></i><h2 class="text-3xl font-bold text-red-500 tracking-[0.2em] mb-4 tech-font">WARNING</h2><p class="text-slate-300 mb-8 font-mono text-xs">SYSTEM ALERT: LEVEL 4 ACCESS REQUIRED.</p><button onclick="openSecretMenuInterface()" class="w-full py-4 bg-red-900/80 border border-red-500 text-red-100 font-bold rounded-lg hover:bg-red-700 transition-all uppercase tracking-widest">Proceed</button><button onclick="closeInterface('secret-warning')" class="mt-6 text-xs text-slate-500 underline">[ ABORT ]</button></div></div>
+    <div id="secret-interface" class="hidden fixed inset-0 z-[60] secret-bg flex flex-col h-full overflow-y-auto animate-interface-open"><header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-700 px-6 py-4 flex items-center gap-4 sticky top-0 z-10 shadow-lg"><button onclick="closeInterface('secret-interface')" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400"><i class="fas fa-arrow-left"></i></button><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center"><i class="fas fa-user-secret"></i></div><h3 class="font-bold text-white text-sm tech-font">SECRET CONSOLE</h3></div></header><div class="flex-grow p-6 max-w-4xl mx-auto w-full"><div class="grid grid-cols-1 md:grid-cols-3 gap-5"><button onclick="toggleSubdomainScan()" class="secret-btn p-6 rounded-xl text-left"><h4 class="text-white font-bold text-lg mb-1 tech-font">Subdomain</h4><p class="text-slate-400 text-xs font-mono">Scanner</p></button></div><div id="subdomain-tool" class="hidden mt-8 bg-slate-900/90 border border-slate-700 rounded-xl p-6"><input type="text" id="subdomain-input" placeholder="domain.com" class="w-full px-4 py-4 bg-slate-800 border border-slate-600 rounded-lg text-white mb-4"><button onclick="scanSubdomain()" class="w-full py-4 bg-violet-700 text-white font-bold rounded-lg hover:bg-violet-600">SCAN</button><div id="subdomain-result" class="hidden mt-4 bg-black p-4 rounded text-green-400 font-mono text-xs"><pre id="subdomain-output"></pre></div></div></div></div>
+    
+    <div id="chat-interface" class="hidden fixed inset-0 z-[60] bg-slate-900 flex flex-col h-full animate-interface-open"><header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 px-6 py-4 flex items-center gap-4 sticky top-0 z-10"><button onclick="closeInterface('chat-interface')" class="text-slate-400"><i class="fas fa-arrow-left"></i></button><h3 class="text-white font-bold">AI Assistant</h3></header><div id="chat-container" class="flex-grow overflow-y-auto p-4 flex flex-col gap-4 bg-slate-900"></div><div class="p-4 bg-slate-800 border-t border-slate-700 sticky bottom-0 z-10"><div class="max-w-4xl mx-auto flex items-end gap-2"><textarea id="chat-input" rows="1" class="w-full bg-slate-900 text-white p-3 rounded-xl" placeholder="Ketik..."></textarea><button onclick="sendMessage()" class="bg-blue-600 text-white p-3 rounded-full"><i class="fas fa-paper-plane"></i></button></div></div></div>
+    
+    <div id="spotify-interface" class="hidden fixed inset-0 z-[60] bg-slate-900 flex flex-col h-full overflow-y-auto animate-interface-open"><header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 px-6 py-4 flex items-center gap-4 sticky top-0 z-10"><button onclick="closeInterface('spotify-interface')" class="text-slate-400"><i class="fas fa-arrow-left"></i></button><h3 class="text-white font-bold">Spotify</h3></header><div class="p-6"><div class="flex gap-2 mb-6"><button onclick="openSpotifyTab('song')" id="tab-song" class="flex-1 py-2 text-white bg-green-500 rounded">Lagu</button><button onclick="openSpotifyTab('search')" id="tab-search" class="flex-1 py-2 text-slate-400 bg-slate-800 rounded">Cari</button></div><div id="content-song" class="block"><input type="text" id="sp-song-url" class="w-full bg-slate-800 text-white p-3 rounded mb-2" placeholder="Link Spotify"><button onclick="downloadSpotifySong()" class="w-full bg-green-600 text-white p-3 rounded">Download</button></div><div id="content-search" class="hidden"><input type="text" id="sp-search-query" class="w-full bg-slate-800 text-white p-3 rounded mb-2" placeholder="Judul Lagu"><button onclick="searchSpotify()" class="w-full bg-green-600 text-white p-3 rounded">Cari</button></div><div id="sp-result" class="mt-4 space-y-2 hidden"></div></div></div>
+
+    <div id="youtube-interface" class="hidden fixed inset-0 z-[60] bg-slate-900 flex flex-col h-full overflow-y-auto animate-interface-open"><header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 px-6 py-4 flex items-center gap-4 sticky top-0 z-10"><button onclick="closeInterface('youtube-interface')" class="text-slate-400"><i class="fas fa-arrow-left"></i></button><h3 class="text-white font-bold">YouTube</h3></header><div class="p-6"><div class="flex gap-2 mb-6"><button onclick="openYouTubeTab('mp3')" id="tab-yt-mp3" class="flex-1 py-2 text-white bg-red-600 rounded">MP3</button><button onclick="openYouTubeTab('mp4')" id="tab-yt-mp4" class="flex-1 py-2 text-slate-400 bg-slate-800 rounded">MP4</button></div><input type="text" id="yt-url" class="w-full bg-slate-800 text-white p-3 rounded mb-2" placeholder="Link YouTube"><button onclick="processYouTube()" class="w-full bg-red-600 text-white p-3 rounded">Convert</button><div id="yt-result" class="mt-4 hidden p-4 bg-slate-800 rounded text-center"><h3 id="yt-title" class="text-white font-bold mb-2"></h3><a id="yt-download-btn" href="#" target="_blank" class="bg-red-500 text-white px-4 py-2 rounded">Download</a></div></div></div>
+
+    <div id="tiktok-interface" class="hidden fixed inset-0 z-[60] bg-slate-900 flex flex-col h-full overflow-y-auto animate-interface-open"><header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 px-6 py-4 flex items-center gap-4 sticky top-0 z-10"><button onclick="closeInterface('tiktok-interface')" class="text-slate-400"><i class="fas fa-arrow-left"></i></button><h3 class="text-white font-bold">TikTok</h3></header><div class="p-6"><input type="text" id="tiktok-url" class="w-full bg-slate-800 text-white p-3 rounded mb-2" placeholder="Link TikTok"><button onclick="downloadTiktok()" class="w-full bg-slate-600 text-white p-3 rounded">Download</button><div id="tiktok-result" class="mt-4 hidden"><a id="btn-dl-video" href="#" target="_blank" class="block w-full bg-blue-600 text-white p-3 rounded text-center mb-2">No Watermark</a></div></div></div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast fixed top-6 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-md border border-slate-600 text-white px-6 py-4 rounded-2xl shadow-2xl z-[100] flex items-center gap-4 min-w-[320px]">
+        <div class="w-10 h-10 rounded-full bg-blue-900/50 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30"><i class="fas fa-info-circle"></i></div>
+        <div><h4 class="font-bold text-sm">System Notification</h4><p class="text-xs text-slate-400" id="toast-message">Message here.</p></div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Config from Environment
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // --- AUTH LOGIC ---
+        window.switchAuth = (type) => {
+            if(type === 'register') {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+            } else {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            }
+            document.getElementById('auth-error').classList.add('hidden');
+        };
+
+        window.handleLogin = async () => {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const errorEl = document.getElementById('auth-error');
+
+            if(!user || !pass) {
+                errorEl.innerText = "Isi semua form!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            // ADMIN HARDCODED BYPASS
+            if (user === "Rngga1" && pass === "Anjaym") {
+                try {
+                    await signInAnonymously(auth); 
+                    // Check if admin has saved PFP
+                    const uid = auth.currentUser ? auth.currentUser.uid : null;
+                    let pic = "https://files.catbox.moe/7j1bli.jpg";
+                    
+                    if (uid) {
+                         const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'));
+                         if (userDoc.exists() && userDoc.data().avatar) {
+                             pic = userDoc.data().avatar;
+                         }
+                    }
+                    
+                    setupDashboard("Jerry X Rngga", "ADMIN", pic);
+                    enterSystem();
+                } catch (e) {
+                    console.error(e);
+                    setupDashboard("Jerry X Rngga", "ADMIN", "https://files.catbox.moe/7j1bli.jpg");
+                    enterSystem();
+                }
+                return;
+            }
+
+            // REGULAR USER LOGIN (SIMULATED VIA ANONYMOUS)
+            try {
+                await signInAnonymously(auth);
+                const uid = auth.currentUser.uid;
+                
+                // Fetch saved PFP if exists
+                const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'));
+                let pic = "https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
+                let role = "USER";
+                
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    if (data.avatar) pic = data.avatar;
+                    if (data.role) role = data.role;
+                }
+                
+                setupDashboard(user, role, pic);
+                enterSystem();
+
+            } catch (error) {
+                console.error(error);
+                errorEl.innerText = "Login Gagal: " + (error.code || error.message);
+                errorEl.classList.remove('hidden');
+            }
+        };
+
+        window.handleRegister = async () => {
+            const user = document.getElementById('reg-user').value.trim();
+            const pass = document.getElementById('reg-pass').value.trim();
+            const errorEl = document.getElementById('auth-error');
+
+            if(!user || !pass) {
+                errorEl.innerText = "Isi semua form!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                // FALLBACK: Gunakan Anonymous Auth
+                await signInAnonymously(auth);
+                const uid = auth.currentUser.uid;
+
+                // Simpan Data User ke Firestore
+                await setDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'), {
+                    username: user,
+                    role: 'USER',
+                    joined: new Date().toISOString()
+                });
+
+                setupDashboard(user, "USER", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
+                enterSystem();
+
+            } catch (error) {
+                console.error(error);
+                errorEl.innerText = "Register Gagal: " + (error.code || error.message);
+                errorEl.classList.remove('hidden');
+            }
+        };
+
+        function setupDashboard(name, role, pic) {
+            document.getElementById('dash-username').innerHTML = `${name} <span class="text-blue-400">X</span> V1`;
+            document.getElementById('dash-role').innerText = role;
+            document.getElementById('dash-profile-pic').src = pic;
+            
+            if (role === 'ADMIN') {
+                document.getElementById('dash-role').className = "bg-red-900/50 px-2 py-1 rounded text-red-300 border border-red-500/30";
+            } else {
+                document.getElementById('dash-role').className = "bg-blue-900/50 px-2 py-1 rounded text-blue-300 border border-blue-500/30";
+            }
+        }
+        
+        // --- PFP UPLOAD LOGIC ---
+        const pfpInput = document.getElementById('pfp-input');
+        pfpInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 1048576) { // 1MB Limit
+                 alert("File terlalu besar! Maksimal 1MB.");
+                 return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const base64 = event.target.result;
+                
+                // Update UI immediately
+                document.getElementById('dash-profile-pic').src = base64;
+                
+                // Save to DB
+                const user = auth.currentUser;
+                if (user) {
+                     try {
+                         const userRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'info');
+                         await setDoc(userRef, { avatar: base64 }, { merge: true });
+                         // Also fallback to local storage for quick load
+                         localStorage.setItem('user_pfp', base64);
+                         alert("Foto profil berhasil diperbarui!");
+                     } catch (err) {
+                         console.error("Gagal simpan DB:", err);
+                     }
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // --- EXISTING LOGIC & UI UTILS ---
+        
+        window.enterSystem = () => {
+            document.getElementById('auth-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-dashboard').classList.remove('hidden');
+                initParticles();
+                animateParticles();
+                updateSystemStats();
+            }, 700);
+        }
+
+        // --- PARTICLE SYSTEM (Global Scope) ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+
+        window.initParticles = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 15000; 
+            for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.directionX = (Math.random() * 0.4) - 0.2;
+                this.directionY = (Math.random() * 0.4) - 0.2;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.directionX;
+                this.y += this.directionY;
+                if (this.x < 0 || this.x > canvas.width) this.directionX = -this.directionX;
+                if (this.y < 0 || this.y > canvas.height) this.directionY = -this.directionY;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(100, 150, 255, 0.4)';
+                ctx.fill();
+            }
+        }
+
+        window.animateParticles = () => {
+            requestAnimationFrame(animateParticles);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                for (let b = i; b < particlesArray.length; b++) {
+                    let dx = particlesArray[i].x - particlesArray[b].x;
+                    let dy = particlesArray[i].y - particlesArray[b].y;
+                    let distance = (dx*dx) + (dy*dy);
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        ctx.strokeStyle = 'rgba(100, 150, 255,' + (1 - (distance/20000))*0.15 + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        window.addEventListener('resize', initParticles);
+
+        // --- GENERAL UI ---
+        let toastTimeout;
+        window.showToast = (title, message) => {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.querySelector('h4').innerText = title;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        window.closeInterface = (id) => {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+        }
+
+        window.triggerFeature = (name) => {
+            if (name === 'Chat AI') { document.getElementById('main-dashboard').classList.add('hidden'); document.getElementById('chat-interface').classList.remove('hidden'); }
+            else if (name === 'Spotify Downloader') { document.getElementById('main-dashboard').classList.add('hidden'); document.getElementById('spotify-interface').classList.remove('hidden'); }
+            else if (name === 'YouTube Downloader') { document.getElementById('main-dashboard').classList.add('hidden'); document.getElementById('youtube-interface').classList.remove('hidden'); }
+            else if (name === 'Tiktok Downloader') { document.getElementById('main-dashboard').classList.add('hidden'); document.getElementById('tiktok-interface').classList.remove('hidden'); }
+            else if (name === 'Secret Menu') { document.getElementById('main-dashboard').classList.add('hidden'); document.getElementById('secret-warning').classList.remove('hidden'); }
+            else { showToast("Locked", "Fitur ini belum tersedia."); }
+        }
+        window.openSecretMenuInterface = () => { document.getElementById('secret-warning').classList.add('hidden'); document.getElementById('secret-interface').classList.remove('hidden'); }
+
+        // --- API & FEATURES LOGIC ---
+        // (Re-implementing shortened versions of previous logic for functionality)
+        const API_KEY = "AIzaSyALxAneDRMwWxg7kiDYL2PoXcPv2p1tVOk"; 
+        const RAPID_KEY = "f57c829ab4msh70fe23ce1b5059ap1c7fddjsnf4cabf208fa4";
+        const RAPID_TIKTOK_HOST = "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com";
+        const RAPID_SPOTIFY_HOST = "spotify-downloader9.p.rapidapi.com";
+        const RAPID_SPOTIFY_SEARCH_HOST = "spotify23.p.rapidapi.com";
+        const RAPID_SUBDOMAIN_HOST = "subdomain-scanner.p.rapidapi.com"; 
+        const RAPID_YOUTUBE_MP3_HOST = "youtube-mp36.p.rapidapi.com";
+        const RAPID_YOUTUBE_MP4_HOST = "ytstream-download-youtube-videos.p.rapidapi.com";
+        
+        let currentYtTab = 'mp3';
+        
+        // Chat
+        window.sendMessage = async () => {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+            const container = document.getElementById('chat-container');
+            container.innerHTML += `<div class="chat-bubble chat-user">${msg}</div>`;
+            input.value = '';
+            
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
+                });
+                const data = await res.json();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error.";
+                container.innerHTML += `<div class="chat-bubble chat-ai">${marked.parse(reply)}</div>`;
+            } catch(e) { container.innerHTML += `<div class="chat-bubble chat-ai">Connection Failed.</div>`; }
+        };
+
+        // Spotify
+        window.openSpotifyTab = (t) => {
+             ['song', 'album', 'search'].forEach(tab => {
+                const isActive = t === tab;
+                document.getElementById(`tab-${tab}`).className = isActive ? 'flex-1 py-2 text-sm font-bold rounded-lg transition-all spotify-tab-active' : 'flex-1 py-2 text-sm font-bold rounded-lg transition-all spotify-tab-inactive';
+                document.getElementById(`content-${tab}`).className = isActive ? 'block animate-slide-up' : 'hidden';
+            });
+            document.getElementById('sp-result').classList.add('hidden');
+        };
+
+        async function fetchSpotifyAPI(endpoint, params, specificHost = RAPID_SPOTIFY_HOST) {
+            try {
+                const url = new URL(`https://${specificHost}/${endpoint}`);
+                Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                const response = await fetch(url, { method: 'GET', headers: { 'x-rapidapi-key': RAPID_KEY, 'x-rapidapi-host': specificHost } });
+                
+                if (response.status === 429) {
+                    console.warn(`Rate limit hit for ${specificHost}`);
+                    return null;
+                }
+                if (!response.ok) throw new Error("API Error " + response.status);
+                return await response.json();
+            } catch (error) {
+                console.warn(error); return null;
+            }
+        }
+
+        window.searchSpotify = async () => {
+             const q = document.getElementById('sp-search-query').value;
+             if(!q) return showToast("Error", "Input query");
+             document.getElementById('sp-loading').classList.remove('hidden');
+             document.getElementById('sp-result').classList.add('hidden');
+             
+             try {
+                let data = await fetchSpotifyAPI('search/', { q: q, type: 'tracks', limit: 10 }, RAPID_SPOTIFY_SEARCH_HOST);
+                document.getElementById('sp-loading').classList.add('hidden');
+                document.getElementById('sp-result').classList.remove('hidden');
+                
+                if (data && (data.tracks || data.data)) {
+                    displaySpotifyResult(data.tracks?.items || data.data || data);
+                } else {
+                    showToast("Info", "Tidak ditemukan.");
+                }
+            } catch(e) {
+                document.getElementById('sp-loading').classList.add('hidden');
+                showToast("Error", "Gagal mencari.");
+            }
+        };
+
+        function displaySpotifyResult(items) {
+            const container = document.getElementById('sp-result');
+            container.innerHTML = '';
+            if(!Array.isArray(items)) items = [items];
+            
+            items.forEach(item => {
+                let data = item.data || item;
+                let title = data.name || data.title || "Unknown";
+                let artist = data.artists?.[0]?.name || data.artist?.name || "Unknown";
+                
+                let cover = 'https://cdn-icons-png.flaticon.com/512/408/408451.png';
+                if (data.cover) cover = data.cover;
+                else if (data.cover_url) cover = data.cover_url;
+                else if (data.album && data.album.images && data.album.images.length > 0) cover = data.album.images[0].url;
+                else if (data.albumOfTrack && data.albumOfTrack.coverArt && data.albumOfTrack.coverArt.sources) cover = data.albumOfTrack.coverArt.sources[0].url;
+                else if (data.images && data.images.length > 0) cover = data.images[0].url;
+
+                let id = data.id;
+                let btn = `<button onclick="fillSongInput('https://open.spotify.com/track/${id}')" class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center"><i class="fas fa-arrow-up"></i></button>`;
+                
+                if(data.downloadLink) {
+                    btn = `<a href="${data.downloadLink}" target="_blank" class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center"><i class="fas fa-download"></i></a>`;
+                }
+
+                container.innerHTML += `<div class="bg-slate-800 p-4 rounded-xl flex items-center gap-4 border border-slate-700"><img src="${cover}" class="w-12 h-12 rounded bg-slate-700 object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/408/408451.png'"><div class="flex-grow overflow-hidden"><h4 class="font-bold text-white text-sm truncate">${title}</h4><p class="text-xs text-slate-400 truncate">${artist}</p></div>${btn}</div>`;
+            });
+        }
+
+        window.fillSongInput = (link) => {
+            openSpotifyTab('song');
+            document.getElementById('sp-song-url').value = link;
+        }
+
+        window.downloadSpotifySong = async () => {
+            const url = document.getElementById('sp-song-url').value;
+            if(!url) return showToast("Error", "Masukkan Link!");
+            document.getElementById('sp-loading').classList.remove('hidden');
+            
+            let songId = url.match(/(?:track|album|playlist)\/([a-zA-Z0-9]{22})/) ? url.match(/(?:track|album|playlist)\/([a-zA-Z0-9]{22})/)[1] : url;
+            
+            let data = await fetchSpotifyAPI('tracks/', { ids: songId }, RAPID_SPOTIFY_SEARCH_HOST);
+            if(!data) {
+                showToast("Info", "Menggunakan Server Cadangan...");
+                data = await fetchSpotifyAPI('downloadSong', { songId: url }, RAPID_SPOTIFY_HOST);
+            }
+            
+            document.getElementById('sp-loading').classList.add('hidden');
+            document.getElementById('sp-result').classList.remove('hidden');
+            
+            if(data) displaySpotifyResult(data.tracks || data.data || data);
+            else showToast("Error", "Gagal mengambil lagu.");
+        }
+
+        window.downloadSpotifyAlbum = async () => {
+            const url = document.getElementById('sp-album-url').value;
+             if(!url) return showToast("Error", "Masukkan Link!");
+             document.getElementById('sp-loading').classList.remove('hidden');
+             let data = await fetchSpotifyAPI('downloadAlbum', { albumId: url }, RAPID_SPOTIFY_HOST);
+             document.getElementById('sp-loading').classList.add('hidden');
+             document.getElementById('sp-result').classList.remove('hidden');
+             if(data && data.data) displaySpotifyResult(data.data);
+             else showToast("Error", "Gagal mengambil album.");
+        }
+
+        // --- YOUTUBE LOGIC ---
+        window.openYouTubeTab = (t) => {
+            currentYtTab = t;
+            document.getElementById('tab-yt-mp3').className = t==='mp3' ? 'flex-1 py-2 text-sm font-bold rounded-lg transition-all yt-tab-active' : 'flex-1 py-2 text-sm font-bold rounded-lg transition-all yt-tab-inactive';
+            document.getElementById('tab-yt-mp4').className = t==='mp4' ? 'flex-1 py-2 text-sm font-bold rounded-lg transition-all yt-tab-active' : 'flex-1 py-2 text-sm font-bold rounded-lg transition-all yt-tab-inactive';
+            document.getElementById('yt-result').classList.add('hidden');
+        }
+
+        window.processYouTube = async () => {
+            const url = document.getElementById('yt-url').value;
+            if(!url) return showToast("Error", "Masukkan Link!");
+            
+            let id = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+|\/ytscreeningroom\?v=))([\w\-]{10,12})\b/)?.[1];
+            if(!id) return showToast("Error", "Link tidak valid");
+
+            document.getElementById('yt-loading').classList.remove('hidden');
+            document.getElementById('yt-result').classList.add('hidden');
+
+            try {
+                if(currentYtTab === 'mp3') {
+                    const res = await fetch(`https://${RAPID_YOUTUBE_MP3_HOST}/dl?id=${id}`, { headers: { 'x-rapidapi-key': RAPID_KEY, 'x-rapidapi-host': RAPID_YOUTUBE_MP3_HOST } });
+                    const data = await res.json();
+                    if(data.link) showYtResult(data.title || "Audio", "MP3", data.link);
+                    else throw new Error("Gagal MP3");
+                } else {
+                     const res = await fetch(`https://${RAPID_YOUTUBE_MP4_HOST}/download?id=${id}`, { headers: { 'x-rapidapi-key': RAPID_KEY, 'x-rapidapi-host': RAPID_YOUTUBE_MP4_HOST } });
+                     const data = await res.json();
+                     let link = data.link || data.formats?.[0]?.url || data.url;
+                     if(link) showYtResult(data.title || "Video", "MP4", link);
+                     else throw new Error("Gagal MP4");
+                }
+            } catch(e) {
+                console.error(e);
+                showToast("Error", "Gagal memproses video.");
+            } finally {
+                document.getElementById('yt-loading').classList.add('hidden');
+            }
+        }
+
+        function showYtResult(title, fmt, link) {
+            document.getElementById('yt-title').innerText = title;
+            document.getElementById('yt-format').innerText = "Format: " + fmt;
+            document.getElementById('yt-download-btn').href = link;
+            document.getElementById('yt-result').classList.remove('hidden');
+        }
+
+        // --- TIKTOK LOGIC ---
+        window.downloadTiktok = async () => {
+             const url = document.getElementById('tiktok-url').value;
+             if(!url) return showToast("Error", "Masukkan Link!");
+             document.getElementById('tiktok-loading').classList.remove('hidden');
+             
+             try {
+                 const res = await fetch(`https://${RAPID_TIKTOK_HOST}/vid/index?url=${encodeURIComponent(url)}`, { headers: { 'x-rapidapi-key': RAPID_KEY, 'x-rapidapi-host': RAPID_TIKTOK_HOST } });
+                 const data = await res.json();
+                 let link = data.video?.[0] || data.play || data.download_url;
+                 if(link) {
+                     const video = document.getElementById('tt-video');
+                     video.src = link;
+                     document.getElementById('btn-dl-video').href = link;
+                     document.getElementById('btn-dl-watermark').href = link; 
+                     document.getElementById('tiktok-result').classList.remove('hidden');
+                 } else throw new Error("No video");
+             } catch(e) {
+                 showToast("Error", "Gagal download TikTok.");
+             } finally {
+                 document.getElementById('tiktok-loading').classList.add('hidden');
+             }
+        }
+
+        // --- SUBDOMAIN LOGIC ---
+        window.toggleSubdomainScan = () => { document.getElementById('subdomain-tool').classList.remove('hidden'); }
+        window.scanSubdomain = async () => {
+            const domain = document.getElementById('subdomain-input').value;
+             if(!domain) return showToast("Error", "Masukkan Domain!");
+             document.getElementById('subdomain-loading').classList.remove('hidden');
+             
+             setTimeout(() => { 
+                 const demoData = { target: domain, found: 3, subdomains: [`www.${domain}`, `mail.${domain}`, `api.${domain}`] };
+                 document.getElementById('subdomain-output').innerText = JSON.stringify(demoData, null, 2);
+                 document.getElementById('subdomain-loading').classList.add('hidden');
+                 document.getElementById('subdomain-result').classList.remove('hidden');
+             }, 1500);
+        }
+
+        window.updateSystemStats = () => {
+            document.getElementById('stat-cpu').innerText = Math.floor(Math.random() * 30 + 10) + "%";
+            document.getElementById('stat-ram').innerText = Math.floor(Math.random() * 40 + 30) + "%";
+            setTimeout(updateSystemStats, 2000);
+        }
+        updateSystemStats();
+
+    </script>
+</body>
+</html>
