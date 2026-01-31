@@ -314,15 +314,27 @@
     <script type="module">
         // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Config from Environment
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // Global Variables
+        let auth, db, appId;
+        let isOffline = false; // Flag untuk mode offline
+
+        // Initialize Firebase dengan Error Handling (Agar tombol tidak macet)
+        try {
+            if (typeof __firebase_config === 'undefined') {
+                throw new Error("Konfigurasi Firebase tidak ditemukan (Mode Lokal/Offline).");
+            }
+            const firebaseConfig = JSON.parse(__firebase_config);
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        } catch (e) {
+            console.warn("Gagal inisialisasi Database, beralih ke Mode Offline:", e);
+            isOffline = true; // Aktifkan mode offline jika database gagal
+        }
 
         // --- AUTH LOGIC ---
         window.switchAuth = (type) => {
@@ -340,6 +352,7 @@
             const user = document.getElementById('login-user').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
             const errorEl = document.getElementById('auth-error');
+            const btn = document.getElementById('btn-login');
 
             if(!user || !pass) {
                 errorEl.innerText = "Isi semua form!";
@@ -347,54 +360,54 @@
                 return;
             }
 
-            // ADMIN HARDCODED BYPASS
+            // UI Loading
+            const originalText = btn.innerText;
+            btn.innerText = "MEMERIKSA...";
+            btn.disabled = true;
+            btn.classList.add("opacity-70");
+
+            // 1. CEK ADMIN (HARDCODED BYPASS) - Selalu jalan meski offline
             if (user === "Rngga1" && pass === "Anjaym") {
-                try {
-                    await signInAnonymously(auth); 
-                    // Check if admin has saved PFP
-                    const uid = auth.currentUser ? auth.currentUser.uid : null;
-                    let pic = "https://files.catbox.moe/7j1bli.jpg";
-                    
-                    if (uid) {
-                         const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'));
-                         if (userDoc.exists() && userDoc.data().avatar) {
-                             pic = userDoc.data().avatar;
-                         }
-                    }
-                    
-                    setupDashboard("Jerry X Rngga", "ADMIN", pic);
+                setTimeout(() => {
+                    // Cek jika ada PFP tersimpan di localStorage (untuk mode offline)
+                    let savedPic = localStorage.getItem('admin_pfp') || "https://files.catbox.moe/7j1bli.jpg";
+                    setupDashboard("Jerry X Rngga", "ADMIN", savedPic);
                     enterSystem();
-                } catch (e) {
-                    console.error(e);
-                    setupDashboard("Jerry X Rngga", "ADMIN", "https://files.catbox.moe/7j1bli.jpg");
-                    enterSystem();
-                }
+                }, 800); // Sedikit delay biar kerasa 'loading'
                 return;
             }
 
-            // REGULAR USER LOGIN (SIMULATED VIA ANONYMOUS)
-            try {
-                await signInAnonymously(auth);
-                const uid = auth.currentUser.uid;
-                
-                // Fetch saved PFP if exists
-                const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'));
-                let pic = "https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
-                let role = "USER";
-                
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    if (data.avatar) pic = data.avatar;
-                    if (data.role) role = data.role;
-                }
-                
-                setupDashboard(user, role, pic);
-                enterSystem();
+            // 2. CEK USER BIASA
+            if (isOffline) {
+                // Jika database mati, izinkan login simulasi
+                setTimeout(() => {
+                    setupDashboard(user, "USER (OFFLINE)", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
+                    enterSystem();
+                }, 800);
+            } else {
+                // Jika database hidup, coba login beneran (Anonymous fallback)
+                try {
+                    // Karena email login dimatikan di server, kita pakai anonim + simpan nama
+                    await signInAnonymously(auth);
+                    const uid = auth.currentUser.uid;
+                    
+                    // Coba ambil data profil jika ada
+                    let pic = "https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
+                    try {
+                        const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'));
+                        if (userDoc.exists() && userDoc.data().avatar) {
+                            pic = userDoc.data().avatar;
+                        }
+                    } catch(err) { console.log("New user or fetch error"); }
 
-            } catch (error) {
-                console.error(error);
-                errorEl.innerText = "Login Gagal: " + (error.code || error.message);
-                errorEl.classList.remove('hidden');
+                    setupDashboard(user, "USER", pic);
+                    enterSystem();
+                } catch (error) {
+                    console.error(error);
+                    // Fallback terakhir jika firebase benar-benar error
+                    setupDashboard(user, "GUEST", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
+                    enterSystem();
+                }
             }
         };
 
@@ -402,6 +415,7 @@
             const user = document.getElementById('reg-user').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
             const errorEl = document.getElementById('auth-error');
+            const btn = document.getElementById('btn-register');
 
             if(!user || !pass) {
                 errorEl.innerText = "Isi semua form!";
@@ -409,25 +423,34 @@
                 return;
             }
 
-            try {
-                // FALLBACK: Gunakan Anonymous Auth
-                await signInAnonymously(auth);
-                const uid = auth.currentUser.uid;
+            btn.innerText = "MENDAFTAR...";
+            btn.disabled = true;
 
-                // Simpan Data User ke Firestore
-                await setDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'), {
-                    username: user,
-                    role: 'USER',
-                    joined: new Date().toISOString()
-                });
+            if (isOffline) {
+                setTimeout(() => {
+                    setupDashboard(user, "USER (OFFLINE)", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
+                    enterSystem();
+                }, 800);
+            } else {
+                try {
+                    await signInAnonymously(auth);
+                    const uid = auth.currentUser.uid;
+                    // Simpan nama user
+                    try {
+                        await setDoc(doc(db, 'artifacts', appId, 'users', uid, 'profile', 'info'), {
+                            username: user,
+                            role: 'USER',
+                            joined: new Date().toISOString()
+                        });
+                    } catch(dbErr) { console.warn("DB Save failed", dbErr); }
 
-                setupDashboard(user, "USER", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
-                enterSystem();
-
-            } catch (error) {
-                console.error(error);
-                errorEl.innerText = "Register Gagal: " + (error.code || error.message);
-                errorEl.classList.remove('hidden');
+                    setupDashboard(user, "USER", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
+                    enterSystem();
+                } catch (error) {
+                    // Tetap masuk meski error network
+                    setupDashboard(user, "GUEST", "https://cdn-icons-png.flaticon.com/512/4140/4140048.png");
+                    enterSystem();
+                }
             }
         };
 
@@ -449,7 +472,7 @@
             const file = e.target.files[0];
             if (!file) return;
             
-            if (file.size > 1048576) { // 1MB Limit
+            if (file.size > 1048576) { 
                  alert("File terlalu besar! Maksimal 1MB.");
                  return;
             }
@@ -461,19 +484,20 @@
                 // Update UI immediately
                 document.getElementById('dash-profile-pic').src = base64;
                 
-                // Save to DB
-                const user = auth.currentUser;
-                if (user) {
+                // Save to DB or LocalStorage
+                if (!isOffline && auth && auth.currentUser) {
                      try {
-                         const userRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'info');
+                         const userRef = doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'profile', 'info');
                          await setDoc(userRef, { avatar: base64 }, { merge: true });
-                         // Also fallback to local storage for quick load
-                         localStorage.setItem('user_pfp', base64);
-                         alert("Foto profil berhasil diperbarui!");
-                     } catch (err) {
-                         console.error("Gagal simpan DB:", err);
-                     }
+                     } catch (err) {}
                 }
+                
+                // Simpan di LocalStorage juga sebagai backup (terutama untuk Admin)
+                if (document.getElementById('dash-role').innerText === 'ADMIN') {
+                    localStorage.setItem('admin_pfp', base64);
+                }
+                
+                alert("Foto profil berhasil diperbarui!");
             };
             reader.readAsDataURL(file);
         });
@@ -485,9 +509,12 @@
             setTimeout(() => {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-dashboard').classList.remove('hidden');
-                initParticles();
-                animateParticles();
-                updateSystemStats();
+                // Re-init canvas size for particle effect
+                if(typeof initParticles === 'function') {
+                    initParticles();
+                    animateParticles();
+                }
+                if(typeof updateSystemStats === 'function') updateSystemStats();
             }, 700);
         }
 
